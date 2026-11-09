@@ -19,7 +19,7 @@ class CartController extends ApiController
      */
     protected function cartSessionKey(Request $request): string
     {
-        return 'api-' . Auth::id();
+        return 'api-'.Auth::id();
     }
 
     /**
@@ -32,7 +32,8 @@ class CartController extends ApiController
 
             return $this->successResponse($cart, 'Panier récupéré avec succès');
         } catch (\Exception $e) {
-            Log::error('API Cart index error: ' . $e->getMessage());
+            Log::error('API Cart index error: '.$e->getMessage());
+
             return $this->errorResponse('Erreur lors de la récupération du panier', 500);
         }
     }
@@ -44,40 +45,27 @@ class CartController extends ApiController
     {
         try {
             $cart = $this->getCartArray($request);
+            $totals = cart_totals($cart);
 
-            $subtotal = collect($cart)->sum(function ($item) {
-                return $item['price'] * $item['quantity'];
-            });
-
-            $transportFeePercentage = (float) (DB::table('settings')
-                ->where('key', 'transport_fee_percentage')
-                ->value('value') ?? 5);
+            $currency = ! empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
 
             $commissionPercentage = (float) (DB::table('settings')
                 ->where('key', 'platform_commission_percentage')
                 ->value('value') ?? 10);
 
-            $transportFee = round(($subtotal * $transportFeePercentage) / 100, 2);
-            $encaissementFeePercentage = encaissement_fee_percentage();
-            $encaissementFee = round(($subtotal * $encaissementFeePercentage) / 100, 2);
-            $total = round($subtotal + $transportFee + $encaissementFee, 2);
-
-            $currency = !empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
-
             return $this->successResponse([
                 'items_count' => count($cart),
                 'items_quantity' => collect($cart)->sum('quantity'),
-                'subtotal' => $subtotal,
-                'transport_fee_percentage' => $transportFeePercentage,
-                'transport_fee' => $transportFee,
-                'encaissement_fee_percentage' => $encaissementFeePercentage,
-                'encaissement_fee' => $encaissementFee,
+                'subtotal' => $totals['subtotal'],
+                'transport_fee_percentage' => $totals['transport_fee_percentage'],
+                'transport_fee' => $totals['transport_fee'],
                 'commission_percentage' => $commissionPercentage,
-                'total' => $total,
+                'total' => $totals['total'],
                 'currency' => $currency,
             ], 'Résumé du panier');
         } catch (\Exception $e) {
-            Log::error('API Cart summary error: ' . $e->getMessage());
+            Log::error('API Cart summary error: '.$e->getMessage());
+
             return $this->errorResponse('Erreur lors du calcul du panier', 500);
         }
     }
@@ -190,7 +178,8 @@ class CartController extends ApiController
 
             return $this->successResponse($this->getCartArray($request), 'Article ajouté au panier avec succès', 201);
         } catch (\Exception $e) {
-            Log::error('API Cart add error: ' . $e->getMessage());
+            Log::error('API Cart add error: '.$e->getMessage());
+
             return $this->errorResponse('Erreur lors de l\'ajout au panier', 500);
         }
     }
@@ -208,7 +197,7 @@ class CartController extends ApiController
             $sessionId = $this->cartSessionKey($request);
             $item = Item::findByPublicId($itemId)->first();
 
-            if (!$item) {
+            if (! $item) {
                 return $this->errorResponse('Article introuvable.', 404);
             }
 
@@ -216,7 +205,7 @@ class CartController extends ApiController
                 ->where('item_id', $item->id)
                 ->first();
 
-            if (!$cartRow) {
+            if (! $cartRow) {
                 return $this->errorResponse('Article introuvable dans le panier.', 404);
             }
 
@@ -229,7 +218,8 @@ class CartController extends ApiController
 
             return $this->successResponse($this->getCartArray($request), 'Quantité mise à jour');
         } catch (\Exception $e) {
-            Log::error('API Cart update error: ' . $e->getMessage());
+            Log::error('API Cart update error: '.$e->getMessage());
+
             return $this->errorResponse('Erreur lors de la mise à jour du panier', 500);
         }
     }
@@ -243,7 +233,7 @@ class CartController extends ApiController
             $sessionId = $this->cartSessionKey(request());
             $item = Item::findByPublicId($itemId)->first();
 
-            if (!$item) {
+            if (! $item) {
                 return $this->errorResponse('Article introuvable.', 404);
             }
 
@@ -253,7 +243,8 @@ class CartController extends ApiController
 
             return $this->successResponse($this->getCartArray(request()), 'Article retiré du panier');
         } catch (\Exception $e) {
-            Log::error('API Cart remove error: ' . $e->getMessage());
+            Log::error('API Cart remove error: '.$e->getMessage());
+
             return $this->errorResponse('Erreur lors du retrait du panier', 500);
         }
     }
@@ -270,7 +261,8 @@ class CartController extends ApiController
 
             return $this->successResponse([], 'Panier vidé avec succès');
         } catch (\Exception $e) {
-            Log::error('API Cart clear error: ' . $e->getMessage());
+            Log::error('API Cart clear error: '.$e->getMessage());
+
             return $this->errorResponse('Erreur lors du vidage du panier', 500);
         }
     }
@@ -293,12 +285,15 @@ class CartController extends ApiController
                 'item_id' => $row->item_id,
                 'name' => $row->item_name,
                 'price' => (float) $row->price,
+                // Prix affiché à l'acheteur (supplément inclus), calculé côté serveur.
+                'buyer_price' => buyer_price((float) $row->price),
                 'currency' => $row->currency,
                 'quantity' => $row->quantity,
                 'image' => $row->image,
             ];
             if ($row->has_discount) {
                 $item['original_price'] = (float) $row->original_price;
+                $item['buyer_original_price'] = buyer_price((float) $row->original_price);
                 $item['discount_id'] = $row->discount_id;
                 $item['discount_percentage'] = (float) $row->discount_percentage;
                 $item['has_discount'] = true;

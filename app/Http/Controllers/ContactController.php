@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
-use App\Models\Item;
 use App\Models\Discount;
-use App\Models\User;
+use App\Models\Item;
+use App\Models\Message;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ContactController extends Controller
 {
@@ -20,13 +18,14 @@ class ContactController extends Controller
     {
         $this->notificationService = $notificationService;
     }
+
     /**
      * Envoyer un message automatique avec demande de réduction
      */
     public function contactSeller(Request $request, Item $item)
     {
         $request->validate([
-            'custom_message' => 'nullable|string|max:1000'
+            'custom_message' => 'nullable|string|max:1000',
         ]);
 
         $user = Auth::user();
@@ -38,8 +37,8 @@ class ContactController extends Controller
         }
 
         // Créer le message automatique
-        $defaultMessage = "Bonjour,\n\nJe suis intéressé(e) par votre produit \"{$item->name}\" au prix de {$item->formatted_price}.\n\nSerait-il possible d'obtenir une réduction sur ce produit ?\n\nMerci pour votre réponse.";
-        
+        $defaultMessage = "Bonjour,\n\nJe suis intéressé(e) par votre produit \"{$item->name}\" au prix de {$item->buyer_formatted_price}.\n\nSerait-il possible d'obtenir une réduction sur ce produit ?\n\nMerci pour votre réponse.";
+
         $customMessage = $request->input('custom_message');
         $finalMessage = $customMessage ? $customMessage : $defaultMessage;
 
@@ -51,7 +50,7 @@ class ContactController extends Controller
             'subject' => "Demande de réduction - {$item->name}",
             'content' => $finalMessage,
             'type' => 'item_inquiry',
-            'attachment' => $item->images ? $item->images[0] : null // Première image du produit
+            'attachment' => $item->images ? $item->images[0] : null, // Première image du produit
         ]);
 
         // Créer une demande de réduction automatique
@@ -64,7 +63,7 @@ class ContactController extends Controller
             'final_price' => $item->price, // Sera mis à jour par le vendeur
             'status' => 'pending',
             'expires_at' => now()->addDays(7), // Expire dans 7 jours
-            'reason' => 'Demande automatique de réduction'
+            'reason' => 'Demande automatique de réduction',
         ]);
 
         // Créer une notification pour le vendeur
@@ -88,7 +87,7 @@ class ContactController extends Controller
         $request->validate([
             'discount_percentage' => 'required|numeric|min:1|max:99',
             'expires_in_days' => 'required|integer|min:1|max:30',
-            'response_message' => 'nullable|string|max:1000'
+            'response_message' => 'nullable|string|max:1000',
         ]);
 
         // Vérifier que l'utilisateur est bien le vendeur
@@ -110,8 +109,8 @@ class ContactController extends Controller
                 'receiver_id' => $discount->user_id,
                 'item_id' => $discount->item_id,
                 'subject' => "Réduction approuvée - {$discount->item->name}",
-                'content' => $request->response_message . "\n\nRéduction accordée : {$discount->discount_percentage}% (Prix final : " . number_format((float) $discount->final_price, 0, ',', ' ') . " FCFA)\nValable jusqu'au " . $discount->expires_at->format('d/m/Y'),
-                'type' => 'item_inquiry'
+                'content' => $request->response_message."\n\nRéduction accordée : {$discount->discount_percentage}% (Prix final : ".number_format((float) $discount->final_price, 0, ',', ' ')." FCFA)\nValable jusqu'au ".$discount->expires_at->format('d/m/Y'),
+                'type' => 'item_inquiry',
             ]);
         }
 
@@ -121,14 +120,14 @@ class ContactController extends Controller
             'user_id' => $discount->user_id,
             'type' => 'discount_applied',
             'title' => 'Reduction accordee !',
-            'message' => $seller->name . " vous accorde une reduction de {$discount->discount_percentage}% sur \"{$discount->item->name}\"",
+            'message' => $seller->name." vous accorde une reduction de {$discount->discount_percentage}% sur \"{$discount->item->name}\"",
             'data' => [
                 'seller_id' => $seller->id,
                 'seller_name' => $seller->name,
                 'item_name' => $discount->item->name,
                 'discount_percentage' => $discount->discount_percentage,
                 'final_price' => $discount->final_price,
-                'url' => '/messages/' . $seller->id,
+                'url' => '/messages/'.$seller->id,
             ],
         ]);
 
@@ -141,7 +140,7 @@ class ContactController extends Controller
     public function rejectDiscount(Request $request, Discount $discount)
     {
         $request->validate([
-            'rejection_reason' => 'nullable|string|max:500'
+            'rejection_reason' => 'nullable|string|max:500',
         ]);
 
         // Vérifier que l'utilisateur est bien le vendeur
@@ -151,19 +150,19 @@ class ContactController extends Controller
 
         $discount->update([
             'status' => 'rejected',
-            'reason' => $request->rejection_reason ?: 'Demande de réduction refusée'
+            'reason' => $request->rejection_reason ?: 'Demande de réduction refusée',
         ]);
 
         // Envoyer un message de refus
         $rejectionMessage = $request->rejection_reason ?: 'Je ne peux pas accorder de réduction sur ce produit pour le moment.';
-        
+
         Message::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $discount->user_id,
             'item_id' => $discount->item_id,
             'subject' => "Réduction refusée - {$discount->item->name}",
             'content' => $rejectionMessage,
-            'type' => 'item_inquiry'
+            'type' => 'item_inquiry',
         ]);
 
         // Créer une notification pour l'acheteur
@@ -172,12 +171,12 @@ class ContactController extends Controller
             'user_id' => $discount->user_id,
             'type' => 'discount_offered',
             'title' => 'Reduction refusee',
-            'message' => $seller->name . " n'a pas pu accorder de reduction sur \"{$discount->item->name}\"",
+            'message' => $seller->name." n'a pas pu accorder de reduction sur \"{$discount->item->name}\"",
             'data' => [
                 'seller_id' => $seller->id,
                 'seller_name' => $seller->name,
                 'item_name' => $discount->item->name,
-                'url' => '/messages/' . $seller->id,
+                'url' => '/messages/'.$seller->id,
             ],
         ]);
 
@@ -195,7 +194,7 @@ class ContactController extends Controller
         }
 
         // Vérifier que la réduction est valide
-        if (!$discount->isValid()) {
+        if (! $discount->isValid()) {
             return response()->json(['error' => 'Cette réduction n\'est plus valide.'], 400);
         }
 
@@ -206,7 +205,7 @@ class ContactController extends Controller
             'success' => true,
             'final_price' => $discount->final_price,
             'discount_amount' => $discount->discount_amount,
-            'message' => 'Réduction appliquée avec succès !'
+            'message' => 'Réduction appliquée avec succès !',
         ]);
     }
 

@@ -227,7 +227,7 @@
                                 </div>
                                 <div class="text-right">
                                     <div class="font-bold text-gray-900 dark:text-white">
-                                        {{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}
+                                        {{ number_format(buyer_price((float) $item['price']) * $item['quantity'], 2) }} {{ $item['currency'] }}
                                     </div>
                                 </div>
                             </div>

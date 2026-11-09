@@ -84,14 +84,14 @@
         <div class="absolute top-3 right-3 flex flex-col items-end gap-1">
             @if($hasOffer)
                 <span class="px-2 py-0.5 text-[11px] text-white/80 line-through bg-gray-950/60 rounded-full">
-                    {{ $symbol }} {{ number_format((float) $item->price, 2) }}
+                    {{ $symbol }} {{ number_format((float) $item->buyer_price, 2) }}
                 </span>
                 <span class="px-3 py-1 {{ $isBoosted ? 'bg-gray-800 shadow-lg' : 'bg-gray-900' }} text-white rounded-full text-[13px] font-bold shadow-lg">
-                    {{ $symbol }} {{ number_format((float) $salePrice, 2) }}
+                    {{ $symbol }} {{ number_format(buyer_price((float) $salePrice), 2) }}
                 </span>
             @else
                 <span class="px-3 py-1 {{ $isBoosted ? 'bg-gray-800 shadow-lg' : 'bg-gray-900' }} text-white rounded-full text-[13px] font-bold shadow-lg">
-                    {{ $item->formatted_price }}
+                    {{ $item->buyer_formatted_price }}
                 </span>
             @endif
         </div>

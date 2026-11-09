@@ -879,6 +879,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\WalletController::class, 'index'])->name('index');
         Route::get('/{wallet}/transactions', [App\Http\Controllers\WalletController::class, 'transactions'])->name('transactions');
         Route::get('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'withdrawFunds'])->name('withdraw-funds');
+        Route::get('/{wallet}/withdraw-preview', [App\Http\Controllers\WalletController::class, 'withdrawPreview'])->name('withdraw-preview');
         Route::post('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'storeWithdrawFunds'])->name('store-withdraw-funds');
         Route::get('/{wallet}/balance', [App\Http\Controllers\WalletController::class, 'getBalance'])->name('balance');
         Route::post('/{wallet}/recharge/mobile', [App\Http\Controllers\WalletController::class, 'rechargeWithMobilePayment'])->name('recharge-mobile');

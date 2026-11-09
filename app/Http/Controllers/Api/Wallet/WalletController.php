@@ -5,21 +5,21 @@ namespace App\Http\Controllers\Api\Wallet;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
-use App\Models\WithdrawalRequest;
 use App\Services\MobileMoneyService;
 use App\Services\PaymentService;
 use App\Services\WalletService;
 use DomainException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class WalletController extends ApiController
 {
     private $paymentService;
+
     private $mobileMoneyService;
+
     private $walletService;
 
     public function __construct(PaymentService $paymentService, MobileMoneyService $mobileMoneyService, WalletService $walletService)
@@ -45,7 +45,7 @@ class WalletController extends ApiController
                     'USD' => $usdWallet,
                     'CDF' => $cdfWallet,
                 ],
-                'total_usd_equivalent' => $usdWallet->balance + ($cdfWallet->balance / 2500)
+                'total_usd_equivalent' => $usdWallet->balance + ($cdfWallet->balance / 2500),
             ], 'Wallets récupérés avec succès');
         } catch (\Exception $e) {
             return $this->errorResponse('Erreur lors de la récupération des wallets', 500);
@@ -104,7 +104,7 @@ class WalletController extends ApiController
             $paymentData = [
                 'buyer_id' => $request->user()->id,
                 'amount' => $request->amount,
-                'purpose' => 'Recharge de wallet ' . $wallet->currency,
+                'purpose' => 'Recharge de wallet '.$wallet->currency,
             ];
 
             switch ($request->payment_method) {
@@ -132,10 +132,10 @@ class WalletController extends ApiController
                     'type' => 'credit',
                     'amount' => $request->amount,
                     'balance_after' => $wallet->balance,
-                    'description' => 'Recharge via ' . ucfirst($request->payment_method),
-                    'reference' => $response['provider'] . '-' . time() . '-' . rand(1000, 9999),
+                    'description' => 'Recharge via '.ucfirst($request->payment_method),
+                    'reference' => $response['provider'].'-'.time().'-'.rand(1000, 9999),
                     'status' => 'pending',
-                    'provider' => $request->payment_method
+                    'provider' => $request->payment_method,
                 ]);
             }
 
@@ -143,6 +143,47 @@ class WalletController extends ApiController
         } catch (\Exception $e) {
             return $this->errorResponse('Erreur lors de l\'ajout de fonds', 500);
         }
+    }
+
+    /**
+     * API: Aperçu d'un retrait — frais de l'agrégateur et montant net avant confirmation.
+     * Calculé uniquement côté serveur ; les clients affichent le résultat.
+     */
+    public function withdrawPreview(Request $request): JsonResponse
+    {
+        // L'app mobile envoie l'id numérique du wallet, le web son public_id.
+        $request->merge(['wallet_id' => Wallet::resolveId($request->wallet_id)]);
+
+        $validator = Validator::make($request->all(), [
+            'wallet_id' => 'required|exists:wallets,id',
+            'amount' => 'required|numeric|min:0.01',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        $wallet = Wallet::resolveByPublicId($request->wallet_id);
+
+        if (! $wallet) {
+            return $this->errorResponse('Portefeuille introuvable', 404);
+        }
+
+        if ($wallet->user_id !== $request->user()->id) {
+            return $this->errorResponse('Accès non autorisé', 403);
+        }
+
+        $amount = (float) $request->amount;
+        $breakdown = withdrawal_fee_breakdown($amount);
+
+        return $this->successResponse([
+            'amount' => $amount,
+            'withdrawal_fee_percentage' => $breakdown['percentage'],
+            'withdrawal_fee' => $breakdown['fee'],
+            'net_amount' => $breakdown['net'],
+            'currency' => $wallet->currency,
+            'balance' => (float) $wallet->balance,
+        ], 'Aperçu du retrait');
     }
 
     /**
@@ -194,9 +235,15 @@ class WalletController extends ApiController
 
                 $transaction->update(['status' => $cashOutResponse['status'] ?? 'processing']);
 
+                $withdrawalBreakdown = withdrawal_fee_breakdown((float) $request->amount);
+
                 return $this->successResponse([
                     'withdrawal' => $withdrawalRequest,
                     'transaction' => $transaction,
+                    // Frais de l'agrégateur (jamais les frais d'encaissement) et montant net estimé.
+                    'withdrawal_fee_percentage' => $withdrawalBreakdown['percentage'],
+                    'withdrawal_fee' => $withdrawalBreakdown['fee'],
+                    'net_amount' => $withdrawalBreakdown['net'],
                 ], 'Demande de retrait en cours de traitement');
             } catch (\Exception $apiError) {
                 Log::error('Cash-out API error', ['error' => $apiError->getMessage()]);
@@ -206,7 +253,7 @@ class WalletController extends ApiController
 
                 return $this->successResponse([
                     'withdrawal' => $withdrawalRequest,
-                    'message' => 'Demande enregistrée mais envoi échoué. Réessai manuel prévu.'
+                    'message' => 'Demande enregistrée mais envoi échoué. Réessai manuel prévu.',
                 ], 'Retrait en attente', 202);
             }
         } catch (DomainException $e) {

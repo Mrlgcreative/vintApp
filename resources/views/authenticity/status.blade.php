@@ -27,7 +27,7 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
                             {{ $item->brand->name ?? 'Marque non spécifiée' }} · {{ $item->category->name ?? 'Sans catégorie' }}
                         </p>
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $item->formatted_price }}</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $item->buyer_formatted_price }}</p>
                         @if($item->isVerified())
                             <div class="mt-2">{!! $item->getAuthenticityBadgeHtml() !!}</div>
                         @endif

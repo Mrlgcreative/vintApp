@@ -2,57 +2,52 @@
 
 use App\Services\SettingService;
 
-if (!function_exists('setting')) {
+if (! function_exists('setting')) {
     /**
      * Récupère ou définit une valeur de setting
-     * 
-     * @param string|array|null $key
-     * @param mixed $default
+     *
+     * @param  string|array|null  $key
+     * @param  mixed  $default
      * @return mixed
      */
     function setting($key = null, $default = null)
     {
         $settingService = app(SettingService::class);
-        
+
         if (is_null($key)) {
             return $settingService;
         }
-        
+
         if (is_array($key)) {
             return $settingService->getMultiple($key, $default);
         }
-        
+
         return $settingService->get($key, $default);
     }
 }
 
-if (!function_exists('settings')) {
+if (! function_exists('settings')) {
     /**
      * Récupère plusieurs settings ou tous les settings publics
-     * 
-     * @param array|null $keys
-     * @param mixed $default
-     * @return \Illuminate\Support\Collection
+     *
+     * @param  mixed  $default
+     * @return Collection
      */
     function settings(?array $keys = null, $default = null)
     {
         $settingService = app(SettingService::class);
-        
+
         if (is_null($keys)) {
             return $settingService->getPublicSettings();
         }
-        
+
         return $settingService->getMultiple($keys, $default);
     }
 }
 
-if (!function_exists('setting_bool')) {
+if (! function_exists('setting_bool')) {
     /**
      * Récupère une valeur de setting comme boolean
-     * 
-     * @param string $key
-     * @param bool $default
-     * @return bool
      */
     function setting_bool(string $key, bool $default = false): bool
     {
@@ -60,13 +55,9 @@ if (!function_exists('setting_bool')) {
     }
 }
 
-if (!function_exists('setting_int')) {
+if (! function_exists('setting_int')) {
     /**
      * Récupère une valeur de setting comme integer
-     * 
-     * @param string $key
-     * @param int $default
-     * @return int
      */
     function setting_int(string $key, int $default = 0): int
     {
@@ -74,13 +65,9 @@ if (!function_exists('setting_int')) {
     }
 }
 
-if (!function_exists('setting_float')) {
+if (! function_exists('setting_float')) {
     /**
      * Récupère une valeur de setting comme float
-     * 
-     * @param string $key
-     * @param float $default
-     * @return float
      */
     function setting_float(string $key, float $default = 0.0): float
     {
@@ -88,13 +75,9 @@ if (!function_exists('setting_float')) {
     }
 }
 
-if (!function_exists('setting_string')) {
+if (! function_exists('setting_string')) {
     /**
      * Récupère une valeur de setting comme string
-     * 
-     * @param string $key
-     * @param string $default
-     * @return string
      */
     function setting_string(string $key, string $default = ''): string
     {
@@ -102,13 +85,9 @@ if (!function_exists('setting_string')) {
     }
 }
 
-if (!function_exists('setting_array')) {
+if (! function_exists('setting_array')) {
     /**
      * Récupère une valeur de setting comme array
-     * 
-     * @param string $key
-     * @param array $default
-     * @return array
      */
     function setting_array(string $key, array $default = []): array
     {
@@ -116,11 +95,9 @@ if (!function_exists('setting_array')) {
     }
 }
 
-if (!function_exists('app_name')) {
+if (! function_exists('app_name')) {
     /**
      * Récupère le nom de l'application
-     * 
-     * @return string
      */
     function app_name(): string
     {
@@ -128,11 +105,9 @@ if (!function_exists('app_name')) {
     }
 }
 
-if (!function_exists('commission_rate')) {
+if (! function_exists('commission_rate')) {
     /**
      * Récupère le taux de commission
-     * 
-     * @return float
      */
     function commission_rate(): float
     {
@@ -140,23 +115,101 @@ if (!function_exists('commission_rate')) {
     }
 }
 
-if (!function_exists('encaissement_fee_percentage')) {
+if (! function_exists('encaissement_fee_percentage')) {
     /**
      * Taux de frais d'encaissement (%) ajouté sur le prix de base à l'achat.
-     *
-     * @return float
+     * Inclus dans le prix affiché à l'acheteur : ce dernier ne voit jamais
+     * le supplément, et le vendeur reçoit exactement le prix qu'il a fixé.
      */
     function encaissement_fee_percentage(): float
     {
-        return app(SettingService::class)->getFloat('encaissement_fee_percentage', 5.0);
+        return app(SettingService::class)->getFloat('encaissement_fee_percentage', 4.5);
     }
 }
 
-if (!function_exists('min_withdrawal_amount')) {
+if (! function_exists('buyer_price')) {
+    /**
+     * Prix affiché à l'acheteur : prix vendeur + supplément d'encaissement.
+     * Calculé uniquement côté serveur ; les clients se contentent d'afficher le résultat.
+     */
+    function buyer_price(float $price): float
+    {
+        return round($price * (1 + encaissement_fee_percentage() / 100), 2);
+    }
+}
+
+if (! function_exists('transport_fee_percentage')) {
+    /**
+     * Taux de frais de transport (%).
+     */
+    function transport_fee_percentage(): float
+    {
+        return (float) (DB::table('settings')->where('key', 'transport_fee_percentage')->value('value') ?? 5);
+    }
+}
+
+if (! function_exists('cart_totals')) {
+    /**
+     * Totaux acheteur pour un panier (prix affichés = prix vendeur + supplément encaissement).
+     *
+     * @param  array  $cart  Lignes avec price/quantity (+currency ignorée ici)
+     * @return array{subtotal: float, transport_fee_percentage: float, transport_fee: float, total: float}
+     */
+    function cart_totals(array $cart): array
+    {
+        $subtotal = 0.0;
+        foreach ($cart as $item) {
+            $line = buyer_price((float) ($item['price'] ?? 0)) * ($item['quantity'] ?? 1);
+            $subtotal += $line;
+        }
+        $subtotal = round($subtotal, 2);
+
+        $transportFeePercentage = transport_fee_percentage();
+        $transportFee = round($subtotal * $transportFeePercentage / 100, 2);
+
+        return [
+            'subtotal' => $subtotal,
+            'transport_fee_percentage' => $transportFeePercentage,
+            'transport_fee' => $transportFee,
+            'total' => round($subtotal + $transportFee, 2),
+        ];
+    }
+}
+
+if (! function_exists('withdrawal_fee_percentage')) {
+    /**
+     * Frais de retrait (%) prélevés par l'agrégateur sur chaque retrait.
+     * La plateforme ne prélève rien : seule la part de l'agrégateur est estimée.
+     */
+    function withdrawal_fee_percentage(): float
+    {
+        return app(SettingService::class)->getFloat('withdrawal_fee_percentage', 0.0);
+    }
+}
+
+if (! function_exists('withdrawal_fee_breakdown')) {
+    /**
+     * Détail d'un retrait : frais de l'agrégateur et montant net reçu par le vendeur.
+     * Les frais d'encaissement ne sont jamais déduits au retrait.
+     *
+     * @return array{percentage: float, fee: float, net: float}
+     */
+    function withdrawal_fee_breakdown(float $amount): array
+    {
+        $percentage = withdrawal_fee_percentage();
+        $fee = round($amount * $percentage / 100, 2);
+
+        return [
+            'percentage' => $percentage,
+            'fee' => $fee,
+            'net' => round($amount - $fee, 2),
+        ];
+    }
+}
+
+if (! function_exists('min_withdrawal_amount')) {
     /**
      * Récupère le montant minimum de retrait
-     * 
-     * @return int
      */
     function min_withdrawal_amount(): int
     {
@@ -164,16 +217,13 @@ if (!function_exists('min_withdrawal_amount')) {
     }
 }
 
-if (!function_exists('currency_symbol')) {
+if (! function_exists('currency_symbol')) {
     /**
      * Symbole d'une devise de la plateforme
      *
      * La devise est portée par l'enregistrement (colonne `currency`), pas par
      * un réglage global : la plateforme est bilingue USD / CDF (FC). Toute valeur
      * inconnue ou nulle retombe sur USD, qui est le défaut des colonnes enum.
-     *
-     * @param string|null $currency
-     * @return string
      */
     function currency_symbol(?string $currency): string
     {
@@ -181,11 +231,9 @@ if (!function_exists('currency_symbol')) {
     }
 }
 
-if (!function_exists('is_maintenance_mode')) {
+if (! function_exists('is_maintenance_mode')) {
     /**
      * Vérifie si l'application est en mode maintenance
-     * 
-     * @return bool
      */
     function is_maintenance_mode(): bool
     {
@@ -193,11 +241,9 @@ if (!function_exists('is_maintenance_mode')) {
     }
 }
 
-if (!function_exists('is_registration_enabled')) {
+if (! function_exists('is_registration_enabled')) {
     /**
      * Vérifie si l'inscription est activée
-     * 
-     * @return bool
      */
     function is_registration_enabled(): bool
     {
@@ -205,11 +251,9 @@ if (!function_exists('is_registration_enabled')) {
     }
 }
 
-if (!function_exists('is_payment_enabled')) {
+if (! function_exists('is_payment_enabled')) {
     /**
      * Vérifie si les paiements sont activés
-     * 
-     * @return bool
      */
     function is_payment_enabled(): bool
     {
@@ -217,11 +261,9 @@ if (!function_exists('is_payment_enabled')) {
     }
 }
 
-if (!function_exists('max_images_per_item')) {
+if (! function_exists('max_images_per_item')) {
     /**
      * Récupère le nombre maximum d'images par article
-     * 
-     * @return int
      */
     function max_images_per_item(): int
     {
@@ -229,12 +271,11 @@ if (!function_exists('max_images_per_item')) {
     }
 }
 
-if (!function_exists('settings_by_category')) {
+if (! function_exists('settings_by_category')) {
     /**
      * Récupère les settings par catégorie
-     * 
-     * @param string $category
-     * @return \Illuminate\Support\Collection
+     *
+     * @return Collection
      */
     function settings_by_category(string $category)
     {
@@ -242,11 +283,9 @@ if (!function_exists('settings_by_category')) {
     }
 }
 
-if (!function_exists('app_logo')) {
+if (! function_exists('app_logo')) {
     /**
      * Récupère le chemin du logo de l'application
-     * 
-     * @return string
      */
     function app_logo(): string
     {
@@ -254,11 +293,9 @@ if (!function_exists('app_logo')) {
     }
 }
 
-if (!function_exists('app_favicon')) {
+if (! function_exists('app_favicon')) {
     /**
      * Récupère le chemin du favicon
-     * 
-     * @return string
      */
     function app_favicon(): string
     {
@@ -266,11 +303,9 @@ if (!function_exists('app_favicon')) {
     }
 }
 
-if (!function_exists('app_description')) {
+if (! function_exists('app_description')) {
     /**
      * Récupère la description de l'application
-     * 
-     * @return string
      */
     function app_description(): string
     {
@@ -278,11 +313,9 @@ if (!function_exists('app_description')) {
     }
 }
 
-if (!function_exists('max_upload_size')) {
+if (! function_exists('max_upload_size')) {
     /**
      * Récupère la taille maximale d'upload en MB
-     * 
-     * @return int
      */
     function max_upload_size(): int
     {
@@ -290,15 +323,14 @@ if (!function_exists('max_upload_size')) {
     }
 }
 
-if (!function_exists('allowed_file_types')) {
+if (! function_exists('allowed_file_types')) {
     /**
      * Récupère les types de fichiers autorisés
-     * 
-     * @return array
      */
     function allowed_file_types(): array
     {
         $types = setting_string('allowed_file_types', 'jpg,jpeg,png,gif,pdf');
+
         return array_map('trim', explode(',', $types));
     }
 }
@@ -308,31 +340,40 @@ if (!function_exists('allowed_file_types')) {
 // =================================
 
 use App\Helpers\ColorSystemHelper;
+use App\Models\Cart;
+use App\Models\DeliveryAddress;
+use App\Models\Item;
+use App\Models\Order;
+use App\Models\User;
+use App\Models\Wallet;
+use App\Services\NotificationService;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
-if (!function_exists('color_palette')) {
+if (! function_exists('color_palette')) {
     /**
      * Récupère la palette de couleurs active
      */
     function color_palette($color = null)
     {
         $palette = ColorSystemHelper::getActivePalette();
-        
+
         if ($color) {
             return "var(--color-{$color})";
         }
-        
+
         return $palette;
     }
 }
 
-if (!function_exists('theme_color')) {
+if (! function_exists('theme_color')) {
     /**
      * Génère un style inline avec une couleur thématique
      */
     function theme_color($property, $color, $variant = null)
     {
         $colorVar = $variant ? "{$color}-{$variant}" : $color;
-        
+
         switch ($property) {
             case 'bg':
                 return "style=\"background-color: var(--color-{$colorVar})\"";
@@ -346,7 +387,7 @@ if (!function_exists('theme_color')) {
     }
 }
 
-if (!function_exists('dynamic_class')) {
+if (! function_exists('dynamic_class')) {
     /**
      * Génère des classes Tailwind dynamiques basées sur la palette
      */
@@ -354,7 +395,7 @@ if (!function_exists('dynamic_class')) {
     {
         // Les classes Tailwind utilisent directement nos couleurs définies
         $suffix = $variant ? "-{$variant}" : '';
-        
+
         switch ($type) {
             case 'bg':
                 return "bg-{$color}{$suffix}";
@@ -372,12 +413,13 @@ if (!function_exists('dynamic_class')) {
     }
 }
 
-if (!function_exists('cart_count')) {
+if (! function_exists('cart_count')) {
     function cart_count(): int
     {
         $sessionId = session()->getId();
         $userId = auth()->id();
-        return \App\Models\Cart::where(function ($q) use ($sessionId, $userId) {
+
+        return Cart::where(function ($q) use ($sessionId, $userId) {
             $q->where('session_id', $sessionId);
             if ($userId) {
                 $q->orWhere('user_id', $userId);
@@ -386,12 +428,12 @@ if (!function_exists('cart_count')) {
     }
 }
 
-if (!function_exists('clear_cart')) {
+if (! function_exists('clear_cart')) {
     function clear_cart(): void
     {
         $sessionId = session()->getId();
         $userId = auth()->id();
-        \App\Models\Cart::where(function ($q) use ($sessionId, $userId) {
+        Cart::where(function ($q) use ($sessionId, $userId) {
             $q->where('session_id', $sessionId);
             if ($userId) {
                 $q->orWhere('user_id', $userId);
@@ -400,12 +442,12 @@ if (!function_exists('clear_cart')) {
     }
 }
 
-if (!function_exists('create_orders_from_transaction')) {
+if (! function_exists('create_orders_from_transaction')) {
     function create_orders_from_transaction($transaction): array
     {
         $orders = [];
 
-        if (!$transaction || $transaction->status !== 'completed') {
+        if (! $transaction || $transaction->status !== 'completed') {
             return $orders;
         }
 
@@ -423,9 +465,9 @@ if (!function_exists('create_orders_from_transaction')) {
 
         // --- Idempotence : éviter de recréer les commandes si la transaction
         // a déjà été traitée (double callback, retry, force-complete + callback).
-        $transactionMarker = 'Transaction #' . $transaction->id;
-        $alreadyCreated = \App\Models\Order::where('buyer_id', $buyerId)
-            ->where('notes', 'like', '%' . $transactionMarker . '%')
+        $transactionMarker = 'Transaction #'.$transaction->id;
+        $alreadyCreated = Order::where('buyer_id', $buyerId)
+            ->where('notes', 'like', '%'.$transactionMarker.'%')
             ->exists();
 
         if ($alreadyCreated) {
@@ -433,13 +475,13 @@ if (!function_exists('create_orders_from_transaction')) {
         }
 
         $deliveryAddress = $deliveryAddressId
-            ? \App\Models\DeliveryAddress::find($deliveryAddressId)
-            : \App\Models\DeliveryAddress::where('user_id', $buyerId)->where('is_default', true)->first();
+            ? DeliveryAddress::find($deliveryAddressId)
+            : DeliveryAddress::where('user_id', $buyerId)->where('is_default', true)->first();
 
         foreach ($cart as $itemId => $cartItem) {
-            $item = \App\Models\Item::find($itemId);
+            $item = Item::find($itemId);
 
-            if (!$item) {
+            if (! $item) {
                 continue;
             }
 
@@ -449,12 +491,12 @@ if (!function_exists('create_orders_from_transaction')) {
 
             $orderAmount = round($unitPrice * $cartItem['quantity'], 2);
 
-            $seller = \App\Models\User::find($item->user_id);
-            if (!$seller) {
+            $seller = User::find($item->user_id);
+            if (! $seller) {
                 continue;
             }
 
-            $sellerPendingWallet = \App\Models\Wallet::firstOrCreate(
+            $sellerPendingWallet = Wallet::firstOrCreate(
                 [
                     'user_id' => $seller->id,
                     'type' => 'pending',
@@ -479,7 +521,7 @@ if (!function_exists('create_orders_from_transaction')) {
                 'currency' => $item->currency,
                 'status' => 'confirmed',
                 'paid_at' => now(),
-                'notes' => 'Paiement via ' . ($transaction->provider ?? 'VintApp') . ' - Transaction #' . $transaction->id,
+                'notes' => 'Paiement via '.($transaction->provider ?? 'VintApp').' - Transaction #'.$transaction->id,
             ];
 
             if ($deliveryAddress) {
@@ -493,25 +535,25 @@ if (!function_exists('create_orders_from_transaction')) {
                 $orderData['shipping_phone'] = $phone ?? 'N/A';
             }
 
-            $order = \App\Models\Order::create($orderData);
+            $order = Order::create($orderData);
             $orders[] = $order;
 
             try {
-                app(\App\Services\NotificationService::class)->createOrderNotification(
+                app(NotificationService::class)->createOrderNotification(
                     $buyerId,
                     $item->user_id,
                     $item->name,
                     $order->id,
                     $order->order_number
                 );
-                app(\App\Services\NotificationService::class)->createOrderConfirmedNotification(
+                app(NotificationService::class)->createOrderConfirmedNotification(
                     $buyerId,
                     $order->id,
                     $order->order_number,
                     $item->name
                 );
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Erreur notification commande (transaction): ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Log::error('Erreur notification commande (transaction): '.$e->getMessage());
             }
 
             $item->quantity -= $cartItem['quantity'];
@@ -527,13 +569,13 @@ if (!function_exists('create_orders_from_transaction')) {
     }
 }
 
-if (!function_exists('get_cart_array')) {
+if (! function_exists('get_cart_array')) {
     function get_cart_array(): array
     {
         $sessionId = session()->getId();
         $userId = auth()->id();
 
-        $cartRows = \App\Models\Cart::where(function ($q) use ($sessionId, $userId) {
+        $cartRows = Cart::where(function ($q) use ($sessionId, $userId) {
             $q->where('session_id', $sessionId);
             if ($userId) {
                 $q->orWhere('user_id', $userId);

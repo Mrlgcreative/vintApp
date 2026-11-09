@@ -11,6 +11,7 @@ use DomainException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class WalletService
 {
@@ -21,7 +22,7 @@ class WalletService
     {
         $wallet = $user->wallets()->where('currency', $currency)->first();
 
-        if (!$wallet) {
+        if (! $wallet) {
             $wallet = $user->wallets()->create([
                 'currency' => $currency,
                 'balance' => 0.00,
@@ -47,7 +48,7 @@ class WalletService
             ]);
 
             Transaction::create([
-                'transaction_id' => 'WALLET-APPROVAL-' . strtoupper(\Illuminate\Support\Str::random(12)),
+                'transaction_id' => 'WALLET-APPROVAL-'.strtoupper(Str::random(12)),
                 'user_id' => $wallet->user_id,
                 'buyer_id' => $wallet->user_id,
                 'wallet_id' => $wallet->id,
@@ -83,7 +84,7 @@ class WalletService
             ]);
 
             Transaction::create([
-                'transaction_id' => 'WALLET-REJECT-' . strtoupper(\Illuminate\Support\Str::random(12)),
+                'transaction_id' => 'WALLET-REJECT-'.strtoupper(Str::random(12)),
                 'user_id' => $wallet->user_id,
                 'buyer_id' => $wallet->user_id,
                 'wallet_id' => $wallet->id,
@@ -116,7 +117,7 @@ class WalletService
                 ->lockForUpdate()
                 ->first();
 
-            if (!$enterpriseWallet) {
+            if (! $enterpriseWallet) {
                 throw new DomainException("Wallet entreprise {$currency} introuvable");
             }
 
@@ -126,7 +127,7 @@ class WalletService
                 ->lockForUpdate()
                 ->first();
 
-            if (!$pendingWallet) {
+            if (! $pendingWallet) {
                 throw new DomainException('Wallet pending du vendeur introuvable');
             }
 
@@ -136,7 +137,7 @@ class WalletService
                 ->lockForUpdate()
                 ->first();
 
-            if (!$sellerWallet) {
+            if (! $sellerWallet) {
                 throw new DomainException('Wallet principal du vendeur introuvable');
             }
 
@@ -221,15 +222,21 @@ class WalletService
                 throw new DomainException('Solde insuffisant pour effectuer ce retrait.');
             }
 
+            // Frais de l'agrégateur (jamais les frais d'encaissement) et montant net estimé.
+            $feeBreakdown = withdrawal_fee_breakdown((float) $data['amount']);
+
             $metadata = [
                 'phone_number' => $data['phone_number'],
                 'payment_method' => $data['payment_method'],
                 'withdrawal_date' => now()->toDateTimeString(),
+                'withdrawal_fee_percentage' => $feeBreakdown['percentage'],
+                'withdrawal_fee_estimate' => $feeBreakdown['fee'],
+                'net_estimate' => $feeBreakdown['net'],
             ];
-            if (!empty($data['agent_id'])) {
+            if (! empty($data['agent_id'])) {
                 $metadata['agent_id'] = $data['agent_id'];
             }
-            if (!empty($data['agent_phone'])) {
+            if (! empty($data['agent_phone'])) {
                 $metadata['agent_phone'] = $data['agent_phone'];
             }
 
@@ -237,8 +244,8 @@ class WalletService
                 'type' => 'debit',
                 'amount' => $data['amount'],
                 'balance_after' => $wallet->balance,
-                'description' => $data['description'] ?? 'Retrait de fonds vers ' . $data['phone_number'],
-                'reference' => 'WTH-' . time() . '-' . rand(1000, 9999),
+                'description' => $data['description'] ?? 'Retrait de fonds vers '.$data['phone_number'],
+                'reference' => 'WTH-'.time().'-'.rand(1000, 9999),
                 'status' => 'processing',
                 'provider' => $data['payment_method'],
                 'metadata' => json_encode($metadata),
@@ -293,8 +300,8 @@ class WalletService
                 'type' => 'debit',
                 'amount' => $amount,
                 'balance_after' => $fromWallet->fresh()->balance,
-                'description' => 'Conversion de ' . $fromWallet->currency . ' vers ' . $toWallet->currency,
-                'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
+                'description' => 'Conversion de '.$fromWallet->currency.' vers '.$toWallet->currency,
+                'reference' => 'CONV-'.time().'-'.rand(1000, 9999),
                 'status' => 'completed',
             ]);
 
@@ -303,8 +310,8 @@ class WalletService
                 'type' => 'credit',
                 'amount' => $convertedAmount,
                 'balance_after' => $toWallet->fresh()->balance,
-                'description' => 'Conversion de ' . $fromWallet->currency . ' vers ' . $toWallet->currency,
-                'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
+                'description' => 'Conversion de '.$fromWallet->currency.' vers '.$toWallet->currency,
+                'reference' => 'CONV-'.time().'-'.rand(1000, 9999),
                 'status' => 'completed',
             ]);
         });

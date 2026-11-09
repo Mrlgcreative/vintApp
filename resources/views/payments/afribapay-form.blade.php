@@ -27,7 +27,7 @@
                 @foreach($cartItems as $item)
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">{{ $item['name'] }} × {{ $item['quantity'] }}</span>
-                    <span class="font-medium">{{ number_format($item['price'] * $item['quantity'], 0, ',', ' ') }} {{ $currency }}</span>
+                    <span class="font-medium">{{ number_format(buyer_price((float) $item['price']) * $item['quantity'], 0, ',', ' ') }} {{ $currency }}</span>
                 </div>
                 @endforeach
                 <div class="flex justify-between text-sm pt-2 border-t">

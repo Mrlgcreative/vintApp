@@ -217,7 +217,7 @@
                                     <div class="text-gray-600 dark:text-gray-300 text-sm">{{ Str::limit($item->description, 40) }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="font-bold text-gray-900 dark:text-white">{{ $item->formatted_price ?? $item->price . ' FC' }}</div>
+                                    <div class="font-bold text-gray-900 dark:text-white">{{ $item->buyer_formatted_price }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
@@ -292,7 +292,7 @@
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-semibold text-gray-900 dark:text-white mb-1">{{ $item->name }}</h4>
                                 <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">{{ Str::limit($item->description, 60) }}</p>
-                                <div class="font-bold text-gray-900 dark:text-white mb-2">{{ $item->formatted_price ?? $item->price . ' FC' }}</div>
+                                <div class="font-bold text-gray-900 dark:text-white mb-2">{{ $item->buyer_formatted_price }}</div>
                                 
                                 <div class="flex flex-wrap items-center gap-2 mb-3">
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold 

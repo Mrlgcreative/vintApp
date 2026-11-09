@@ -198,7 +198,7 @@ function showNotification(message, type = 'primary') {
                         @endif
                         <!-- Badge prix -->
                         <div class="absolute top-2 right-2 px-3 py-1 bg-primary-600 text-white rounded-full text-sm font-bold shadow-md">
-                            {{ number_format($item->price) }} {{ $item->currency }}
+                            {{ number_format($item->buyer_price, 2) }} {{ $item->currency }}
                         </div>
                     </div>
                     

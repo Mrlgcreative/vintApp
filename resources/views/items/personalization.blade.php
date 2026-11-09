@@ -43,7 +43,7 @@
                                     @endif
                                     <div class="flex-grow-1">
                                         <h6 class="mb-1">{{ Str::limit($item->name, 40) }}</h6>
-                                        <small class="text-muted">{{ number_format($item->price) }} {{ $item->currency }}</small>
+                                        <small class="text-muted">{{ number_format($item->buyer_price, 2) }} {{ $item->currency }}</small>
                                     </div>
                                 </div>
                             </div>

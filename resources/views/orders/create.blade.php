@@ -34,7 +34,7 @@
                                 <div class="row mb-3">
                                     <div class="col-6">
                                         <small class="text-muted">Prix unitaire</small>
-                                        <div class="h5 text-primary fw-bold">{{ $item->formatted_price }}</div>
+                                        <div class="h5 text-primary fw-bold">{{ $item->buyer_formatted_price }}</div>
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted">Stock disponible</small>
@@ -81,7 +81,7 @@
                                     @foreach(App\Models\Item::with(['category', 'brand'])->where('status', 'active')->get() as $availableItem)
                                         <option value="{{ $availableItem->id }}" 
                                                 {{ old('item_id') == $availableItem->id ? 'selected' : '' }}>
-                                            {{ $availableItem->name }} - {{ $availableItem->formatted_price }}
+                                            {{ $availableItem->name }} - {{ $availableItem->buyer_formatted_price }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -111,11 +111,11 @@
                                 <div class="form-control-plaintext" 
                                      id="total-price"
                                      @if($item)
-                                         data-unit-price="{{ $item->price }}"
+                                         data-unit-price="{{ $item->buyer_price }}"
                                          data-currency="{{ $item->currency }}"
                                      @endif>
                                     @if($item)
-                                        {{ $item->formatted_price }}
+                                        {{ $item->buyer_formatted_price }}
                                     @else
                                         Sélectionnez un article
                                     @endif

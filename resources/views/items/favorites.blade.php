@@ -59,7 +59,7 @@
                                 {{ $item->name }}
                             </a>
                             <div class="mt-auto flex items-center justify-between gap-2 pt-3">
-                                <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">{{ number_format($item->price, 0, ',', ' ') }} {{ $item->currency }}</span>
+                                <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">{{ number_format($item->buyer_price, 2, ',', ' ') }} {{ $item->currency }}</span>
                                 <div class="flex min-w-0 items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
                                     <i class="fas fa-store flex-shrink-0"></i>
                                     <span class="truncate">{{ $item->user?->name ?? 'Vendeur' }}</span>

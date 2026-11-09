@@ -97,7 +97,7 @@
                                     @if($contact->item)
                                         <div class="mt-1.5 flex items-center gap-1.5">
                                             <span class="truncate text-xs font-medium text-vinted-primary-600 dark:text-vinted-primary-400">{{ $contact->item->name }}</span>
-                                            <span class="text-xs font-semibold text-vinted-primary-700 dark:text-vinted-primary-300">{{ $contact->item->formatted_price }}</span>
+                                            <span class="text-xs font-semibold text-vinted-primary-700 dark:text-vinted-primary-300">{{ $contact->item->buyer_formatted_price }}</span>
                                             @if($contact->has_discount)
                                                 <x-badge variant="soft-success">
                                                     <i class="fas fa-tag mr-1"></i> Offre

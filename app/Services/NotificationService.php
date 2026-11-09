@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Notification;
-use App\Models\User;
-use App\Models\Item;
-use App\Models\Offer;
 use App\Events\NewNotification;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Item;
+use App\Models\Notification;
+use App\Models\Offer;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 class NotificationService
@@ -18,8 +17,9 @@ class NotificationService
         try {
             NewNotification::dispatch($notification);
         } catch (\Exception $e) {
-            Log::error('Erreur broadcast notification: ' . $e->getMessage());
+            Log::error('Erreur broadcast notification: '.$e->getMessage());
         }
+
         return $notification;
     }
 
@@ -30,7 +30,7 @@ class NotificationService
     private function sendPushWithoutDuplicate(?User $user, string $title, string $body, array $data): void
     {
         try {
-            if (!$user || empty($user->fcm_token)) {
+            if (! $user || empty($user->fcm_token)) {
                 return;
             }
             app(FirebasePushService::class)->sendNotification(
@@ -42,7 +42,7 @@ class NotificationService
                 false
             );
         } catch (\Exception $e) {
-            Log::error('Erreur envoi push notification: ' . $e->getMessage());
+            Log::error('Erreur envoi push notification: '.$e->getMessage());
         }
     }
 
@@ -59,33 +59,34 @@ class NotificationService
                 'user_id' => $receiverId,
                 'type' => 'new_message',
                 'title' => 'Nouveau message',
-                'message' => $sender->name . ' vous a envoyé un message',
+                'message' => $sender->name.' vous a envoyé un message',
                 'data' => [
                     'sender_id' => $senderId,
                     'sender_name' => $sender->name,
                     'message_preview' => \Str::limit($messageContent, 99),
                     'conversation_id' => $senderId,
-                    'url' => '/messages/' . $senderId,
+                    'url' => '/messages/'.$senderId,
                 ],
             ]);
 
             $this->sendPushWithoutDuplicate(
                 $receiver,
                 'Nouveau message',
-                $sender->name . ' vous a envoyé un message',
+                $sender->name.' vous a envoyé un message',
                 [
                     'type' => 'new_message',
                     'sender_id' => (string) $senderId,
                     'sender_name' => $sender->name,
                     'conversation_id' => (string) $senderId,
                     'message_preview' => \Str::limit($messageContent, 99),
-                    'url' => '/messages/' . $senderId,
+                    'url' => '/messages/'.$senderId,
                 ]
             );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification: '.$e->getMessage());
+
             return false;
         }
     }
@@ -109,27 +110,28 @@ class NotificationService
             if ($orderId) {
                 $data['order_id'] = (string) $orderId;
                 $data['order_number'] = $orderNumber;
-                $data['url'] = '/orders/' . $orderId;
+                $data['url'] = '/orders/'.$orderId;
             }
 
             $this->createAndBroadcast([
                 'user_id' => $sellerId,
                 'type' => 'new_order',
                 'title' => 'Nouvelle commande',
-                'message' => $buyer->name . ' a commandé votre article "' . $itemName . '"',
+                'message' => $buyer->name.' a commandé votre article "'.$itemName.'"',
                 'data' => $data,
             ]);
 
             $this->sendPushWithoutDuplicate(
                 $seller,
                 'Nouvelle commande',
-                $buyer->name . ' a commandé votre article "' . $itemName . '"',
+                $buyer->name.' a commandé votre article "'.$itemName.'"',
                 $data
             );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification: '.$e->getMessage());
+
             return false;
         }
     }
@@ -146,31 +148,32 @@ class NotificationService
                 'user_id' => $buyerId,
                 'type' => 'order_confirmed',
                 'title' => 'Commande confirmée',
-                'message' => 'Votre commande ' . $orderNumber . ' (' . $itemName . ') a été confirmée',
+                'message' => 'Votre commande '.$orderNumber.' ('.$itemName.') a été confirmée',
                 'data' => [
                     'order_id' => (string) $orderId,
                     'order_number' => $orderNumber,
                     'item_name' => $itemName,
-                    'url' => '/orders/' . $orderId,
+                    'url' => '/orders/'.$orderId,
                 ],
             ]);
 
             $this->sendPushWithoutDuplicate(
                 $buyer,
                 'Commande confirmée',
-                'Votre commande ' . $orderNumber . ' (' . $itemName . ') a été confirmée',
+                'Votre commande '.$orderNumber.' ('.$itemName.') a été confirmée',
                 [
                     'type' => 'order_confirmed',
                     'order_id' => (string) $orderId,
                     'order_number' => $orderNumber,
                     'item_name' => $itemName,
-                    'url' => '/orders/' . $orderId,
+                    'url' => '/orders/'.$orderId,
                 ]
             );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification: '.$e->getMessage());
+
             return false;
         }
     }
@@ -187,29 +190,30 @@ class NotificationService
                 'user_id' => $sellerId,
                 'type' => 'item_published',
                 'title' => 'Article publié',
-                'message' => 'Votre article "' . $item->name . '" a été publié et est en cours de vérification',
+                'message' => 'Votre article "'.$item->name.'" a été publié et est en cours de vérification',
                 'data' => [
                     'item_id' => (string) $item->id,
                     'item_name' => $item->name,
-                    'url' => '/items/' . $item->id,
+                    'url' => '/items/'.$item->id,
                 ],
             ]);
 
             $this->sendPushWithoutDuplicate(
                 $seller,
                 'Article publié',
-                'Votre article "' . $item->name . '" a été publié et est en cours de vérification',
+                'Votre article "'.$item->name.'" a été publié et est en cours de vérification',
                 [
                     'type' => 'item_published',
                     'item_id' => (string) $item->id,
                     'item_name' => $item->name,
-                    'url' => '/items/' . $item->id,
+                    'url' => '/items/'.$item->id,
                 ]
             );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification: '.$e->getMessage());
+
             return false;
         }
     }
@@ -232,19 +236,20 @@ class NotificationService
 
             if (empty($tokens)) {
                 Log::info('Broadcast article publié : aucun token FCM', ['item_id' => $item->id]);
+
                 return;
             }
 
             $sellerName = $item->user?->name ?? 'Un vendeur';
-            $price = $item->formatted_price ?? number_format((float) $item->price, 0, ',', ' ');
+            $price = $item->buyer_formatted_price ?? number_format((float) $item->price, 0, ',', ' ');
             $itemName = $item->name;
 
             $templates = [
-                "Nouveau sur VintApp : \"{item}\" à {price} par {seller}",
-                "{seller} vient de publier \"{item}\" sur VintApp !",
+                'Nouveau sur VintApp : "{item}" à {price} par {seller}',
+                '{seller} vient de publier "{item}" sur VintApp !',
                 "Découvrez \"{item}\" à {price} avant qu'il ne parte !",
-                "Nouveauté VintApp : \"{item}\" est maintenant disponible",
-                "Il vient de paraître : \"{item}\" ({price}) par {seller}",
+                'Nouveauté VintApp : "{item}" est maintenant disponible',
+                'Il vient de paraître : "{item}" ({price}) par {seller}',
             ];
 
             $message = str_replace(
@@ -263,7 +268,7 @@ class NotificationService
                     'item_name' => $itemName,
                     'seller_name' => $sellerName,
                     'price' => $price,
-                    'url' => '/items/' . $item->id,
+                    'url' => '/items/'.$item->id,
                 ],
                 null,
                 false
@@ -275,7 +280,7 @@ class NotificationService
                 'success' => $result['success'] ?? 0,
             ]);
         } catch (\Exception $e) {
-            Log::error('Erreur broadcast article publié: ' . $e->getMessage());
+            Log::error('Erreur broadcast article publié: '.$e->getMessage());
         }
     }
 
@@ -294,7 +299,7 @@ class NotificationService
                 ->all();
 
             $template = count($tokens) > 0
-                ? "Nouvelle promo : {title} ({discount}) ! Profitez-en avant la fin de la réduction."
+                ? 'Nouvelle promo : {title} ({discount}) ! Profitez-en avant la fin de la réduction.'
                 : '';
 
             // Persistance in-app pour tous les utilisateurs
@@ -304,7 +309,7 @@ class NotificationService
                     'user_id' => $userId,
                     'type' => 'promo',
                     'title' => 'Nouvelle promotion !',
-                    'message' => $offer->title . ' — profitez de ' . $offer->discountLabel() . ' sur VintApp.',
+                    'message' => $offer->title.' — profitez de '.$offer->discountLabel().' sur VintApp.',
                     'data' => [
                         'offer_id' => (string) $offer->id,
                         'title' => $offer->title,
@@ -317,6 +322,7 @@ class NotificationService
 
             if (empty($tokens)) {
                 Log::info('Broadcast promo : aucun token FCM', ['offer_id' => $offer->id]);
+
                 return;
             }
 
@@ -347,7 +353,7 @@ class NotificationService
                 'success' => $result['success'] ?? 0,
             ]);
         } catch (\Exception $e) {
-            Log::error('Erreur broadcast promo: ' . $e->getMessage());
+            Log::error('Erreur broadcast promo: '.$e->getMessage());
         }
     }
 
@@ -358,12 +364,12 @@ class NotificationService
     {
         try {
             $user = User::find($userId);
-            
+
             $this->createAndBroadcast([
                 'user_id' => $userId,
                 'type' => 'item_favorited',
                 'title' => 'Article ajouté aux favoris',
-                'message' => 'Vous avez ajouté "' . $itemName . '" à vos favoris',
+                'message' => 'Vous avez ajouté "'.$itemName.'" à vos favoris',
                 'data' => [
                     'item_name' => $itemName,
                     'url' => '/items',
@@ -372,7 +378,8 @@ class NotificationService
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification: '.$e->getMessage());
+
             return false;
         }
     }
@@ -384,26 +391,27 @@ class NotificationService
     {
         try {
             $seller = User::find($sellerId);
-            
+
             $this->createAndBroadcast([
                 'user_id' => $buyerId,
                 'type' => 'discount_applied',
                 'title' => 'Réduction accordée !',
-                'message' => $seller->name . ' vous accorde une réduction de ' . $discountPercentage . '% sur "' . $itemName . '" - Nouveau prix: ' . $finalPriceWithCurrency,
+                'message' => $seller->name.' vous accorde une réduction de '.$discountPercentage.'% sur "'.$itemName.'" - Nouveau prix: '.$finalPriceWithCurrency,
                 'data' => [
                     'seller_id' => $sellerId,
                     'seller_name' => $seller->name,
                     'item_name' => $itemName,
                     'discount_percentage' => $discountPercentage,
                     'final_price' => $finalPriceWithCurrency,
-                    'url' => '/messages/' . $sellerId,
+                    'url' => '/messages/'.$sellerId,
                 ],
-                'url' => '/messages/' . $sellerId,
+                'url' => '/messages/'.$sellerId,
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification de réduction: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification de réduction: '.$e->getMessage());
+
             return false;
         }
     }
@@ -419,7 +427,7 @@ class NotificationService
                 'user_id' => $refund->buyer_id,
                 'type' => 'refund_approved',
                 'title' => 'Remboursement approuvé ✅',
-                'message' => 'Votre demande de remboursement de ' . $refund->formatted_refund_amount . ' pour la commande #' . $refund->order->order_number . ' a été approuvée.',
+                'message' => 'Votre demande de remboursement de '.$refund->formatted_refund_amount.' pour la commande #'.$refund->order->order_number.' a été approuvée.',
                 'data' => [
                     'refund_id' => $refund->id,
                     'order_id' => $refund->order_id,
@@ -427,7 +435,7 @@ class NotificationService
                     'item_name' => $refund->order->item->name,
                     'amount' => $refund->refund_amount,
                     'currency' => $refund->currency,
-                    'url' => '/orders/' . $refund->order_id,
+                    'url' => '/orders/'.$refund->order_id,
                 ],
             ]);
 
@@ -436,7 +444,7 @@ class NotificationService
                 'user_id' => $refund->seller_id,
                 'type' => 'refund_approved',
                 'title' => 'Remboursement approuvé pour votre article',
-                'message' => 'Un remboursement de ' . $refund->formatted_refund_amount . ' a été approuvé pour votre article "' . $refund->order->item->name . '".',
+                'message' => 'Un remboursement de '.$refund->formatted_refund_amount.' a été approuvé pour votre article "'.$refund->order->item->name.'".',
                 'data' => [
                     'refund_id' => $refund->id,
                     'order_id' => $refund->order_id,
@@ -445,13 +453,14 @@ class NotificationService
                     'buyer_name' => $refund->buyer->name,
                     'amount' => $refund->refund_amount,
                     'currency' => $refund->currency,
-                    'url' => '/orders/' . $refund->order_id,
+                    'url' => '/orders/'.$refund->order_id,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création des notifications de remboursement approuvé: ' . $e->getMessage());
+            Log::error('Erreur lors de la création des notifications de remboursement approuvé: '.$e->getMessage());
+
             return false;
         }
     }
@@ -467,7 +476,7 @@ class NotificationService
                 'user_id' => $refund->buyer_id,
                 'type' => 'refund_rejected',
                 'title' => 'Demande de remboursement refusée',
-                'message' => 'Votre demande de remboursement pour la commande #' . $refund->order->order_number . ' a été refusée.',
+                'message' => 'Votre demande de remboursement pour la commande #'.$refund->order->order_number.' a été refusée.',
                 'data' => [
                     'refund_id' => $refund->id,
                     'order_id' => $refund->order_id,
@@ -476,7 +485,7 @@ class NotificationService
                     'amount' => $refund->refund_amount,
                     'currency' => $refund->currency,
                     'admin_notes' => $refund->admin_notes,
-                    'url' => '/orders/' . $refund->order_id,
+                    'url' => '/orders/'.$refund->order_id,
                 ],
             ]);
 
@@ -485,20 +494,21 @@ class NotificationService
                 'user_id' => $refund->seller_id,
                 'type' => 'refund_rejected',
                 'title' => 'Demande de remboursement refusée',
-                'message' => 'La demande de remboursement pour votre article "' . $refund->order->item->name . '" a été refusée.',
+                'message' => 'La demande de remboursement pour votre article "'.$refund->order->item->name.'" a été refusée.',
                 'data' => [
                     'refund_id' => $refund->id,
                     'order_id' => $refund->order_id,
                     'order_number' => $refund->order->order_number,
                     'item_name' => $refund->order->item->name,
                     'buyer_name' => $refund->buyer->name,
-                    'url' => '/orders/' . $refund->order_id,
+                    'url' => '/orders/'.$refund->order_id,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création des notifications de remboursement rejeté: ' . $e->getMessage());
+            Log::error('Erreur lors de la création des notifications de remboursement rejeté: '.$e->getMessage());
+
             return false;
         }
     }
@@ -514,7 +524,7 @@ class NotificationService
                 'user_id' => $refund->buyer_id,
                 'type' => 'refund_negotiation',
                 'title' => 'Contre-offre de remboursement',
-                'message' => 'Une contre-offre de ' . $refund->currency . ' ' . number_format($refund->counter_offer_amount, 2) . ' a été proposée pour votre demande de remboursement.',
+                'message' => 'Une contre-offre de '.$refund->currency.' '.number_format($refund->counter_offer_amount, 2).' a été proposée pour votre demande de remboursement.',
                 'data' => [
                     'refund_id' => $refund->id,
                     'order_id' => $refund->order_id,
@@ -524,7 +534,7 @@ class NotificationService
                     'counter_offer' => $refund->counter_offer_amount,
                     'currency' => $refund->currency,
                     'admin_notes' => $refund->admin_notes,
-                    'url' => '/orders/' . $refund->order_id,
+                    'url' => '/orders/'.$refund->order_id,
                 ],
             ]);
 
@@ -533,7 +543,7 @@ class NotificationService
                 'user_id' => $refund->seller_id,
                 'type' => 'refund_negotiation',
                 'title' => 'Négociation de remboursement',
-                'message' => 'Une contre-offre de ' . $refund->currency . ' ' . number_format($refund->counter_offer_amount, 2) . ' a été proposée pour le remboursement de votre article.',
+                'message' => 'Une contre-offre de '.$refund->currency.' '.number_format($refund->counter_offer_amount, 2).' a été proposée pour le remboursement de votre article.',
                 'data' => [
                     'refund_id' => $refund->id,
                     'order_id' => $refund->order_id,
@@ -543,13 +553,14 @@ class NotificationService
                     'original_amount' => $refund->refund_amount,
                     'counter_offer' => $refund->counter_offer_amount,
                     'currency' => $refund->currency,
-                    'url' => '/orders/' . $refund->order_id,
+                    'url' => '/orders/'.$refund->order_id,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création des notifications de négociation: ' . $e->getMessage());
+            Log::error('Erreur lors de la création des notifications de négociation: '.$e->getMessage());
+
             return false;
         }
     }
@@ -616,13 +627,14 @@ class NotificationService
                     'distance_km' => $localDelivery->distance_km,
                     'delivery_fee' => $localDelivery->delivery_fee,
                     'currency' => $localDelivery->currency,
-                    'url' => '/local-deliveries/' . $localDelivery->id,
+                    'url' => '/local-deliveries/'.$localDelivery->id,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification de livraison proposée: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification de livraison proposée: '.$e->getMessage());
+
             return false;
         }
     }
@@ -645,13 +657,14 @@ class NotificationService
                     'buyer_name' => $localDelivery->buyer->name,
                     'buyer_phone' => $localDelivery->buyer_phone,
                     'buyer_address' => $localDelivery->buyer_address,
-                    'url' => '/local-deliveries/' . $localDelivery->id,
+                    'url' => '/local-deliveries/'.$localDelivery->id,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification de livraison acceptée: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification de livraison acceptée: '.$e->getMessage());
+
             return false;
         }
     }
@@ -674,13 +687,14 @@ class NotificationService
                     'delivery_code' => $localDelivery->delivery_code,
                     'seller_name' => $localDelivery->seller->name,
                     'seller_phone' => $localDelivery->seller_phone,
-                    'url' => '/local-deliveries/' . $localDelivery->id,
+                    'url' => '/local-deliveries/'.$localDelivery->id,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification de livraison en transit: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification de livraison en transit: '.$e->getMessage());
+
             return false;
         }
     }
@@ -701,13 +715,14 @@ class NotificationService
                     'order_id' => $localDelivery->order_id,
                     'order_number' => $localDelivery->order->order_number,
                     'delivery_time' => $localDelivery->actual_delivery_time->format('d/m/Y H:i'),
-                    'url' => '/orders/' . $localDelivery->order_id,
+                    'url' => '/orders/'.$localDelivery->order_id,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification de livraison terminée: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification de livraison terminée: '.$e->getMessage());
+
             return false;
         }
     }
@@ -742,15 +757,16 @@ class NotificationService
                         'order_id' => $localDelivery->order_id,
                         'order_number' => $localDelivery->order->order_number,
                         'cancellation_reason' => $localDelivery->cancellation_reason,
-                        'url' => '/orders/' . $localDelivery->order_id,
+                        'url' => '/orders/'.$localDelivery->order_id,
                     ],
                 ]);
             }
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la création de la notification d\'annulation: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la notification d\'annulation: '.$e->getMessage());
+
             return false;
         }
     }
-} 
+}

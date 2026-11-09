@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-
-use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\HasPublicId;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Order extends Model
 {
-    use HasPublicId;
-
     use HasFactory;
+    use HasPublicId;
 
     protected $fillable = [
         'order_number',
@@ -39,6 +38,8 @@ class Order extends Model
         'proximity_notified_at',
     ];
 
+    protected $appends = ['buyer_unit_price', 'buyer_total_amount'];
+
     protected $casts = [
         'unit_price' => 'decimal:2',
         'total_amount' => 'decimal:2',
@@ -53,10 +54,10 @@ class Order extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($order) {
             if (empty($order->order_number)) {
-                $order->order_number = 'ORD-' . date('Y') . '-' . strtoupper(Str::random(8));
+                $order->order_number = 'ORD-'.date('Y').'-'.strtoupper(Str::random(8));
             }
             // Générer un token unique pour le scan QR code
             if (empty($order->scan_token)) {
@@ -64,7 +65,7 @@ class Order extends Model
             }
         });
     }
-    
+
     /**
      * Obtenir l'URL de scan du QR code
      */
@@ -134,7 +135,8 @@ class Order extends Model
     public function getFormattedTotalAmountAttribute()
     {
         $symbol = $this->currency === 'USD' ? '$' : 'FC';
-        return $symbol . ' ' . number_format((float)$this->total_amount, 2);
+
+        return $symbol.' '.number_format((float) $this->total_amount, 2);
     }
 
     /**
@@ -143,7 +145,38 @@ class Order extends Model
     public function getFormattedUnitPriceAttribute()
     {
         $symbol = $this->currency === 'USD' ? '$' : 'FC';
-        return $symbol . ' ' . number_format((float)$this->unit_price, 2);
+
+        return $symbol.' '.number_format((float) $this->unit_price, 2);
+    }
+
+    /**
+     * Prix unitaire vu par l'acheteur (supplément encaissement inclus), calculé côté serveur.
+     */
+    public function getBuyerUnitPriceAttribute(): float
+    {
+        return buyer_price((float) $this->unit_price);
+    }
+
+    /**
+     * Total vu par l'acheteur (supplément encaissement inclus).
+     */
+    public function getBuyerTotalAmountAttribute(): float
+    {
+        return round($this->buyer_unit_price * ($this->quantity ?? 1), 2);
+    }
+
+    public function getFormattedBuyerUnitPriceAttribute()
+    {
+        $symbol = $this->currency === 'USD' ? '$' : 'FC';
+
+        return $symbol.' '.number_format($this->buyer_unit_price, 2);
+    }
+
+    public function getFormattedBuyerTotalAmountAttribute()
+    {
+        $symbol = $this->currency === 'USD' ? '$' : 'FC';
+
+        return $symbol.' '.number_format($this->buyer_total_amount, 2);
     }
 
     /**
@@ -151,7 +184,7 @@ class Order extends Model
      */
     public function getStatusBadgeClassAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'bg-warning',
             'confirmed' => 'bg-info',
             'shipped' => 'bg-primary',
@@ -168,7 +201,7 @@ class Order extends Model
      */
     public function getStatusTextAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'En attente',
             'confirmed' => 'Confirmée',
             'shipped' => 'Expédiée',

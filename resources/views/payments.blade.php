@@ -32,7 +32,7 @@
                                         @endif
                                         <span class="text-gray-900 dark:text-white">{{ $item['name'] }} x {{ $item['quantity'] }}</span>
                                     </div>
-                                    <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}</span>
+                                    <span class="font-semibold text-gray-900 dark:text-white">{{ number_format(buyer_price((float) $item['price']) * $item['quantity'], 2) }} {{ $item['currency'] }}</span>
                                 </div>
                             @endforeach
                         </div>
@@ -51,7 +51,7 @@
                             $subtotalInPriority = 0;
                             
                             foreach($cart as $item) {
-                                $itemTotal = $item['price'] * $item['quantity'];
+                                $itemTotal = buyer_price((float) $item['price']) * $item['quantity'];
                                 $itemCurrency = $item['currency'] ?? 'USD';
                                 
                                 if ($itemCurrency !== $priorityCurrency) {
@@ -71,12 +71,8 @@
                             $transportFeeInPriority = ($subtotalInPriority * $transportFeePercentage) / 100;
                             $transportFeeInPriority = round($transportFeeInPriority, 2);
                             
-                            // Calculer les frais d'encaissement dans la devise prioritaire
-                            $encaissementFeePercentage = encaissement_fee_percentage();
-                            $encaissementFeeInPriority = round(($subtotalInPriority * $encaissementFeePercentage) / 100, 2);
-                            
-                            // Total final
-                            $totalInPriority = $subtotalInPriority + $transportFeeInPriority + $encaissementFeeInPriority;
+                            // Total final (le supplément d'encaissement est inclus dans les prix affichés)
+                            $totalInPriority = round($subtotalInPriority + $transportFeeInPriority, 2);
                         @endphp
                         
                         <!-- Récapitulatif des montants -->

@@ -79,7 +79,7 @@
                                 @endif
                                 @if($vintPass->item)
                                 <p class="text-green-400 font-bold text-lg">
-                                    {{ $vintPass->item->formatted_price }}
+                                    {{ $vintPass->item->buyer_formatted_price }}
                                 </p>
                                 @elseif($vintPass->item_snapshot['price'] ?? false)
                                 <p class="text-green-400 font-bold text-lg">

@@ -249,7 +249,7 @@
                             {{-- Prix overlay bottom --}}
                             <div class="absolute bottom-2 right-2 z-20">
                                 <span class="px-2.5 py-1 bg-gray-900/80 backdrop-blur-sm text-white rounded-lg text-xs md:text-sm font-bold shadow-lg">
-                                    {{ $item->formatted_price }}
+                                    {{ $item->buyer_formatted_price }}
                                 </span>
                             </div>
                         </a>

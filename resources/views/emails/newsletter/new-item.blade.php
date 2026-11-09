@@ -147,7 +147,7 @@
 
                     <p class="item-description">{{ Str::limit($item->description, 200) }}</p>
 
-                    <div class="item-price">{{ number_format($item->price) }} {{ $item->currency }}</div>
+                    <div class="item-price">{{ number_format($item->buyer_price, 2) }} {{ $item->currency }}</div>
 
                     <div class="item-meta">
                         Par {{ $item->user->name }} &mdash; {{ $item->views }} vues

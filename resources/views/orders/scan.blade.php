@@ -96,7 +96,7 @@
                         <div class="col-6">
                             <div class="border rounded p-2 text-center">
                                 <small class="text-muted d-block">Prix unitaire</small>
-                                <strong>{{ number_format($order->unit_price, 2) }} {{ $order->currency }}</strong>
+                                <strong>{{ number_format(buyer_price((float) $order->unit_price), 2) }} {{ $order->currency }}</strong>
                             </div>
                         </div>
                         <div class="col-6">
@@ -111,7 +111,7 @@
                     <div class="bg-light rounded p-3 text-center">
                         <small class="text-muted d-block mb-1">Montant total</small>
                         <h4 class="mb-0 text-primary">
-                            {{ number_format($order->total_amount, 2) }} {{ $order->currency }}
+                            {{ number_format(buyer_price((float) $order->unit_price) * $order->quantity, 2) }} {{ $order->currency }}
                         </h4>
                     </div>
                 </div>

@@ -89,7 +89,7 @@ if (typeof jsQR === 'undefined') {
                                 <div class="flex-1 min-w-0">
                                     <p class="font-medium text-sm text-gray-900 dark:text-white leading-snug">{{ Str::limit($order->item->name, 40) }}</p>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Quantité : {{ $order->quantity }}</p>
-                                    <p class="mt-2 text-lg font-semibold text-gray-900 dark:text-white tabular-nums">{{ $order->formatted_total_price }}</p>
+                                    <p class="mt-2 text-lg font-semibold text-gray-900 dark:text-white tabular-nums">{{ $order->formatted_buyer_total_amount }}</p>
                                 </div>
                             </div>
 

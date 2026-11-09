@@ -14,7 +14,7 @@ class SystemController extends Controller
             'status' => 'success',
             'message' => 'VintApp API is running',
             'version' => '1.0.0',
-            'timestamp' => now()->toIso8601String()
+            'timestamp' => now()->toIso8601String(),
         ]);
     }
 
@@ -27,15 +27,15 @@ class SystemController extends Controller
                     'code' => 'USD',
                     'name' => 'Dollar américain',
                     'symbol' => '$',
-                    'flag' => '🇺🇸'
+                    'flag' => '🇺🇸',
                 ],
                 [
                     'code' => 'CDF',
                     'name' => 'Franc congolais',
                     'symbol' => 'FC',
-                    'flag' => '🇨🇩'
+                    'flag' => '🇨🇩',
                 ],
-            ]
+            ],
         ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 
@@ -52,10 +52,10 @@ class SystemController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
+                // Transport et commission restent exposés ; le supplément d'encaissement
+                // est déjà inclus dans les prix acheteur calculés côté serveur.
                 'commission_percentage' => $commissionPercentage,
                 'transport_fee_percentage' => $transportFeePercentage,
-                // Le mobile doit ajouter ce taux au montant débité (le web le fait déjà).
-                'encaissement_fee_percentage' => encaissement_fee_percentage(),
             ],
         ]);
     }
@@ -126,8 +126,8 @@ class SystemController extends Controller
                     ],
                 ],
                 'links' => [
-                    ['key' => 'privacy_policy', 'label' => 'Politique de confidentialité', 'url' => $baseUrl . '/privacy'],
-                    ['key' => 'terms', 'label' => 'Conditions générales', 'url' => $baseUrl . '/terms'],
+                    ['key' => 'privacy_policy', 'label' => 'Politique de confidentialité', 'url' => $baseUrl.'/privacy'],
+                    ['key' => 'terms', 'label' => 'Conditions générales', 'url' => $baseUrl.'/terms'],
                 ],
             ],
         ], 200, [], JSON_UNESCAPED_UNICODE);

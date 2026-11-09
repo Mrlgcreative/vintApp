@@ -174,12 +174,12 @@
                             </div>
                         </div>
 
-                        <!-- Information frais d'encaissement -->
+                        <!-- Information supplément acheteur -->
                         <div class="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-lg border border-amber-200 dark:border-amber-500/30">
                             <div class="flex items-start">
                                 <i class="fas fa-info-circle text-amber-500 mt-0.5 mr-2 flex-shrink-0"></i>
                                 <p class="text-xs text-amber-700 dark:text-amber-300">
-                                    <strong>Note :</strong> Les frais d'encaissement de {{ encaissement_fee_percentage() }}% seront ajoutés sur le prix de base de l'article au moment de l'achat par le client.
+                                    Un supplément de 4,5 % est ajouté au prix affiché pour couvrir les frais de dépôt de l'acheteur. Vous recevez le prix que vous avez fixé.
                                 </p>
                             </div>
                         </div>

@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Item;
-use App\Models\Category;
-use App\Models\Brand;
-use App\Models\User;
-use App\Models\Setting;
-use App\Models\AllowedCity;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Builder;
-use App\Services\CacheService;
-use App\Services\MonitoringService;
-use App\Services\ItemService;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
+use App\Models\AllowedCity;
+use App\Models\Brand;
+use App\Models\Cart;
+use App\Models\Category;
+use App\Models\Item;
+use App\Models\Review;
+use App\Models\Setting;
+use App\Models\User;
+use App\Services\CacheService;
+use App\Services\ItemService;
+use App\Services\MonitoringService;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
     protected $cacheService;
+
     protected $itemService;
 
     public function __construct(CacheService $cacheService, ItemService $itemService)
@@ -28,6 +31,7 @@ class ItemController extends Controller
         $this->cacheService = $cacheService;
         $this->itemService = $itemService;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -42,7 +46,7 @@ class ItemController extends Controller
             'category:id,name,slug',
             'brand:id,name,country',
             'user:id,name,avatar,avatar_url,city,commune',
-            'activeBoosts.boostType:id,name,icon,visual_config'
+            'activeBoosts.boostType:id,name,icon,visual_config',
         ];
 
         // Ville de l'utilisateur (session ou requête)
@@ -67,11 +71,11 @@ class ItemController extends Controller
 
         // Appliquer les filtres à toutes les requêtes
         $queries = [$boostedItemsQuery, $regularItemsQuery];
-        
+
         foreach ($queries as $query) {
             // Filtre par ville
             if ($filterCity) {
-                $query->whereHas('user', function($q) use ($filterCity) {
+                $query->whereHas('user', function ($q) use ($filterCity) {
                     $q->where('city', $filterCity)
                         ->orWhere('location', 'like', "%{$filterCity}%");
                 });
@@ -100,7 +104,7 @@ class ItemController extends Controller
 
             if ($request->filled('q') || $request->filled('search')) {
                 $search = $request->filled('q') ? $request->q : $request->search;
-                $query->where(function($sub) use ($search) {
+                $query->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%");
                 });
@@ -110,24 +114,24 @@ class ItemController extends Controller
         // Tri et ordre des boosts d'abord
         $sort = $request->get('sort', 'created_at');
         $order = $request->get('order', 'desc');
-        
+
         $boostedItems = $boostedItemsQuery->orderBy($sort, $order)->get();
         $regularItems = $regularItemsQuery->orderBy($sort, $order)->get();
-        
+
         // Combiner les collections en priorisant les boostés
         $allItems = $boostedItems->concat($regularItems);
-        
+
         // Paginer manuellement
         $perPage = 12;
         $currentPage = $request->get('page', 1);
         $total = $allItems->count();
         $items = $allItems->forPage($currentPage, $perPage);
-        
+
         // Créer un paginator personnalisé
-        $items = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items->values(), 
-            $total, 
-            $perPage, 
+        $items = new LengthAwarePaginator(
+            $items->values(),
+            $total,
+            $perPage,
             $currentPage,
             [
                 'path' => $request->url(),
@@ -148,15 +152,15 @@ class ItemController extends Controller
     {
         $categories = $this->cacheService->getCategories(true);
         $brands = $this->cacheService->getBrands(true);
-        
+
         // Vérifier si les restrictions géographiques sont activées
         $locationRestrictionsEnabled = Setting::get('enable_location_restrictions', true);
-        
+
         // Récupérer les villes autorisées si les restrictions sont activées
-        $allowedCities = $locationRestrictionsEnabled 
+        $allowedCities = $locationRestrictionsEnabled
             ? AllowedCity::active()->orderBy('country')->orderBy('name')->get()
             : collect(); // Collection vide si désactivé
-        
+
         return view('items.create', compact('categories', 'brands', 'locationRestrictionsEnabled', 'allowedCities'));
     }
 
@@ -167,15 +171,15 @@ class ItemController extends Controller
     {
         $startTime = microtime(true);
         $monitoring = app(MonitoringService::class);
-        
+
         try {
             // La validation est déjà faite par StoreItemRequest (minimum 3 images)
-            
+
             Log::info('Création d\'article - Début', [
                 'user_id' => Auth::id(),
                 'name' => $request->name,
                 'has_images' => $request->hasFile('images'),
-                'image_count' => $request->hasFile('images') ? count($request->file('images')) : 0
+                'image_count' => $request->hasFile('images') ? count($request->file('images')) : 0,
             ]);
 
             $item = $this->itemService->createItem($request);
@@ -183,7 +187,7 @@ class ItemController extends Controller
             Log::info('Article créé avec succès', [
                 'item_id' => $item->id,
                 'verification_status' => $item->verification_status,
-                'score' => $item->verification_score
+                'score' => $item->verification_score,
             ]);
 
             // Enregistrer la métrique business
@@ -203,7 +207,7 @@ class ItemController extends Controller
 
             // Le score IA réel est calculé en arrière-plan (VerifyItemWithAi) après la
             // réponse : on n'annonce donc pas de score heuristique au vendeur.
-            $message = 'Article créé avec succès ! Il est en attente de vérification par notre équipe.';
+            $message = 'Article créé avec succès ! Il est en attente de vérification par notre équipe. Un supplément de 4,5 % est ajouté au prix affiché pour couvrir les frais de dépôt de l\'acheteur. Vous recevez le prix que vous avez fixé.';
 
             return redirect()->route('items.show', $item)
                 ->with('success', $message);
@@ -212,16 +216,16 @@ class ItemController extends Controller
             Log::error('Erreur création article', [
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             $monitoring->recordError($e, [
                 'action' => 'item.store',
                 'user_id' => Auth::id(),
             ]);
-            
+
             return back()->withInput()
-                ->with('error', 'Une erreur est survenue lors de la création de l\'article: ' . $e->getMessage());
+                ->with('error', 'Une erreur est survenue lors de la création de l\'article: '.$e->getMessage());
         }
     }
 
@@ -232,37 +236,37 @@ class ItemController extends Controller
     {
         // Incrémenter les vues de manière asynchrone pour ne pas ralentir l'affichage
         $item->incrementQuietly('views');
-        
+
         // Invalider le cache de l'item après incrément
         $this->cacheService->forgetItem($item->id);
-        
+
         // Charger les relations de manière optimisée
         $item->load([
             'category:id,name,slug',
             'brand:id,name,country',
             'user:id,name,avatar,avatar_url,email,city,commune',
             'activeBoosts.boostType:id,name,icon,visual_config',
-            'authenticityCheck'
+            'authenticityCheck',
         ]);
-        
+
         // Récupérer les reviews approuvées pour cet item avec eager loading
-        $reviews = \App\Models\Review::where('item_id', $item->id)
+        $reviews = Review::where('item_id', $item->id)
             ->where('status', 'approved')
             ->with(['reviewer:id,name,avatar,avatar_url'])
             ->select('id', 'item_id', 'reviewer_id', 'rating', 'comment', 'created_at')
             ->orderBy('created_at', 'desc')
             ->take(2)
             ->get();
-        
+
         // Calculer la moyenne des ratings et le total
-        $reviewsStats = \App\Models\Review::where('item_id', $item->id)
+        $reviewsStats = Review::where('item_id', $item->id)
             ->where('status', 'approved')
             ->selectRaw('COUNT(*) as total_reviews, AVG(rating) as average_rating')
             ->first();
-        
+
         $averageRating = $reviewsStats->average_rating ? round($reviewsStats->average_rating, 1) : 0;
         $totalReviews = $reviewsStats->total_reviews ?? 0;
-        
+
         // Articles similaires avec cache
         $cacheKey = "similar_items.{$item->category_id}.exclude.{$item->id}";
         $similarItems = $this->cacheService->remember($cacheKey, 300, function () use ($item) {
@@ -273,7 +277,7 @@ class ItemController extends Controller
                 ->with([
                     'category:id,name,slug',
                     'brand:id,name',
-                    'user:id,name'
+                    'user:id,name',
                 ])
                 ->select('id', 'public_id', 'user_id', 'name', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition')
                 ->limit(4)
@@ -321,20 +325,20 @@ class ItemController extends Controller
      */
     public function pendingVerificationList(Request $request)
     {
-        $query = Item::where(function($q) {
-                $q->where('verification_status', 'pending')
-                  ->orWhereNull('verification_status');
-            })
+        $query = Item::where(function ($q) {
+            $q->where('verification_status', 'pending')
+                ->orWhereNull('verification_status');
+        })
             ->where('status', '!=', 'sold')
             ->with(['user', 'category', 'brand']);
 
         if ($request->filled('search')) {
-            $search = '%' . $request->search . '%';
-            $query->where(function($q) use ($search) {
+            $search = '%'.$request->search.'%';
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', $search)
-                  ->orWhereHas('user', function($q) use ($search) {
-                      $q->where('name', 'like', $search);
-                  });
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', $search);
+                    });
             });
         }
 
@@ -344,7 +348,7 @@ class ItemController extends Controller
 
         $items = $query->orderBy('created_at', 'desc')->paginate(20);
 
-        $categories = \App\Models\Category::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
 
         return view('admin.items.pending_verification', compact('items', 'categories'));
     }
@@ -358,21 +362,21 @@ class ItemController extends Controller
             // Vérifier que l'utilisateur est le propriétaire
             if ($item->user_id !== Auth::id()) {
                 if (request()->expectsJson()) {
-            return response()->json([
-                'success' => false,
-                        'message' => 'Vous n\'êtes pas autorisé à supprimer cet article.'
-            ], 403);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Vous n\'êtes pas autorisé à supprimer cet article.',
+                    ], 403);
                 }
                 abort(403, 'Vous n\'êtes pas autorisé à supprimer cet article.');
-        }
+            }
 
             // Supprimer les images puis l'article
             $this->itemService->deleteItem($item);
 
             if (request()->expectsJson()) {
-        return response()->json([
-            'success' => true,
-                    'message' => 'Article supprimé avec succès !'
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Article supprimé avec succès !',
                 ]);
             }
 
@@ -383,13 +387,13 @@ class ItemController extends Controller
             Log::error('Erreur lors de la suppression de l\'article', [
                 'item_id' => $item->id,
                 'user_id' => Auth::id(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Erreur lors de la suppression de l\'article.'
+                    'message' => 'Erreur lors de la suppression de l\'article.',
                 ], 500);
             }
 
@@ -425,18 +429,18 @@ class ItemController extends Controller
             ->visible();
 
         $queries = [$boostedItems, $regularItems];
-        
+
         foreach ($queries as $items) {
             if ($filterCity) {
-                $items->whereHas('user', function($q) use ($filterCity) {
+                $items->whereHas('user', function ($q) use ($filterCity) {
                     $q->where('location', 'like', "%{$filterCity}%");
                 });
             }
 
             if ($query) {
-                $items->where(function($q) use ($query) {
+                $items->where(function ($q) use ($query) {
                     $q->where('name', 'like', "%{$query}%")
-                      ->orWhere('description', 'like', "%{$query}%");
+                        ->orWhere('description', 'like', "%{$query}%");
                 });
             }
 
@@ -459,20 +463,20 @@ class ItemController extends Controller
 
         $boostedResults = $boostedItems->orderBy('created_at', 'desc')->get();
         $regularResults = $regularItems->orderBy('created_at', 'desc')->get();
-        
+
         $allResults = $boostedResults->concat($regularResults);
-        
+
         // Paginer manuellement
         $perPage = 12;
         $currentPage = $request->get('page', 1);
         $total = $allResults->count();
         $items = $allResults->forPage($currentPage, $perPage);
-        
+
         // Créer un paginator personnalisé
-        $items = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items->values(), 
-            $total, 
-            $perPage, 
+        $items = new LengthAwarePaginator(
+            $items->values(),
+            $total,
+            $perPage,
             $currentPage,
             [
                 'path' => $request->url(),
@@ -480,7 +484,7 @@ class ItemController extends Controller
             ]
         );
         $items->appends($request->query());
-        
+
         $categories = Category::where('is_active', true)->get();
         $cities = AllowedCity::active()->orderBy('name')->pluck('name');
 
@@ -513,7 +517,7 @@ class ItemController extends Controller
             })
             ->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%");
+                    ->orWhere('description', 'like', "%{$query}%");
             })
             ->orderBy('created_at', 'desc')
             ->limit(6)
@@ -525,7 +529,7 @@ class ItemController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
-                    'formatted_price' => $item->formatted_price,
+                    'formatted_price' => $item->buyer_formatted_price,
                     'first_image_url' => $item->first_image_url,
                     'user' => [
                         'name' => optional($item->user)->name,
@@ -542,7 +546,7 @@ class ItemController extends Controller
     public function toggleFavorite(Item $item)
     {
         $user = Auth::user();
-        
+
         if ($user->favorites()->where('item_id', $item->id)->exists()) {
             $user->favorites()->detach($item->id);
             $message = 'Article retiré des favoris';
@@ -554,7 +558,7 @@ class ItemController extends Controller
         return response()->json([
             'success' => true,
             'message' => $message,
-            'is_favorite' => $user->favorites()->where('item_id', $item->id)->exists()
+            'is_favorite' => $user->favorites()->where('item_id', $item->id)->exists(),
         ]);
     }
 
@@ -565,7 +569,7 @@ class ItemController extends Controller
     {
         $items = Auth::user()->items()
             ->with(['category', 'brand', 'authenticityCheck'])
-                    ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('items.my-items', compact('items'));
@@ -594,14 +598,14 @@ class ItemController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|in:active,inactive,sold'
+            'status' => 'required|in:active,inactive,sold',
         ]);
 
         // Un article rejeté ne peut pas être réactivé manuellement (modération)
         if ($item->verification_status === 'rejected') {
             return response()->json([
                 'success' => false,
-                'message' => 'Cet article a été rejeté. Modifiez-le pour le re-soumettre à la vérification.'
+                'message' => 'Cet article a été rejeté. Modifiez-le pour le re-soumettre à la vérification.',
             ], 422);
         }
 
@@ -610,7 +614,7 @@ class ItemController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Statut mis à jour avec succès'
+            'message' => 'Statut mis à jour avec succès',
         ]);
     }
 
@@ -655,7 +659,7 @@ class ItemController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Article mis à jour avec succès !'
+            'message' => 'Article mis à jour avec succès !',
         ]);
     }
 
@@ -668,7 +672,7 @@ class ItemController extends Controller
         $sessionId = $request->session()->getId();
         $userId = Auth::id();
 
-        $cartRow = \App\Models\Cart::firstOrNew([
+        $cartRow = Cart::firstOrNew([
             'session_id' => $sessionId,
             'item_id' => $item->id,
         ]);
@@ -736,9 +740,9 @@ class ItemController extends Controller
 
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -759,7 +763,7 @@ class ItemController extends Controller
                 'per_page' => $items->perPage(),
                 'current_page' => $items->currentPage(),
                 'last_page' => $items->lastPage(),
-            ]
+            ],
         ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
@@ -774,13 +778,13 @@ class ItemController extends Controller
 
         $isOwner = Auth::check() && $item->user_id === Auth::id();
 
-        if (!$isOwner && ($item->status !== 'active' || !$item->isAvailable())) {
+        if (! $isOwner && ($item->status !== 'active' || ! $item->isAvailable())) {
             abort(404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $item
+            'data' => $item,
         ]);
     }
 
@@ -795,13 +799,13 @@ class ItemController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Article créé avec succès',
-                'data' => $item
+                'data' => $item,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la création',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -817,7 +821,7 @@ class ItemController extends Controller
             if ($item->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Non autorisé'
+                    'message' => 'Non autorisé',
                 ], 403);
             }
 
@@ -826,13 +830,13 @@ class ItemController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Article mis à jour avec succès',
-                'data' => $item
+                'data' => $item,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -848,7 +852,7 @@ class ItemController extends Controller
             if ($item->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Non autorisé'
+                    'message' => 'Non autorisé',
                 ], 403);
             }
 
@@ -856,13 +860,13 @@ class ItemController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Article supprimé avec succès'
+                'message' => 'Article supprimé avec succès',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la suppression',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
